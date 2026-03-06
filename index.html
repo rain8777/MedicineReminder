@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamot Reminder PH</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  
+  --sun:       #F7941D;   
+  --sun-light: #FFF4E6;
+  --sun-mid:   #FFE0B2;
+  --ocean:     #1565A8;   
+  --ocean-lt:  #E3F0FF;
+  --ocean-mid: #90BBE8;
+  --leaf:      #2E7D32;   
+  --leaf-lt:   #E8F5E9;
+  --red:       #C62828;
+  --red-lt:    #FFEBEE;
+  --amber:     #E65100;
+  --amber-lt:  #FFF3E0;
+
+  --bg:        #FAF8F5;   
+  --surface:   #FFFFFF;
+  --surface2:  #F5F2EE;
+  --border:    #E8E2D9;
+  --border2:   #D4C9B8;
+
+  --text:      #1C1410;
+  --text2:     #4A3728;
+  --muted:     #8C7B6B;
+
+  --radius:    16px;
+  --radius-sm: 10px;
+  --shadow:    0 2px 16px rgba(28,20,16,0.07);
+  --shadow-md: 0 6px 32px rgba(28,20,16,0.12);
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(ellipse 70% 50% at 90% -10%, rgba(247,148,29,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at -10% 100%, rgba(21,101,168,0.08) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+#auth-screen {
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  position:relative;
+}
+
+#auth-screen::after {
+  content:'💊';
+  font-size:160px;
+  position:fixed; bottom:-30px; right:-20px;
+  opacity:0.04; pointer-events:none; user-select:none;
+  transform:rotate(-15deg);
+}
+
+.auth-box {
+  background:var(--surface);
+  border-radius:24px;
+  padding:48px 44px;
+  width:100%; max-width:460px;
+  box-shadow:var(--shadow-md);
+  border:1px solid var(--border);
+  animation:slideUp 0.45s cubic-bezier(0.16,1,0.3,1);
+  position:relative;
+}
+
+.auth-box::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg, var(--sun), var(--ocean));
+  border-radius:24px 24px 0 0;
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:none; }
+}
+
+.auth-logo { text-align:center; margin-bottom:36px; }
+.auth-logo .pill-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg, var(--sun-light), var(--ocean-lt));
+  border:1.5px solid var(--border);
+  border-radius:100px;
+  padding:8px 18px; margin-bottom:16px;
+  font-size:0.82rem; font-weight:700; color:var(--text2);
+  letter-spacing:0.5px; text-transform:uppercase;
+}
+.auth-logo h1 {
+  font-family:'Playfair Display',serif;
+  font-size:2rem; font-weight:900;
+  color:var(--text); line-height:1.1;
+}
+.auth-logo h1 em { color:var(--ocean); font-style:normal; }
+.auth-logo p { color:var(--muted); font-size:0.88rem; margin-top:6px; }
+
+.lang-row { display:flex; gap:8px; margin-bottom:24px; }
+.lang-btn {
+  flex:1; padding:9px; border:2px solid var(--border);
+  border-radius:var(--radius-sm); background:var(--surface);
+  cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700; font-size:0.84rem; text-align:center;
+  transition:all 0.2s; color:var(--text2);
+}
+.lang-btn:hover { border-color:var(--ocean-mid); }
+.lang-btn.active { border-color:var(--ocean); background:var(--ocean-lt); color:var(--ocean); }
+
+.auth-tabs {
+  display:flex; background:var(--surface2);
+  border-radius:12px; padding:4px; margin-bottom:28px;
+  border:1px solid var(--border);
+}
+.auth-tab {
+  flex:1; text-align:center; padding:10px;
+  border-radius:9px; cursor:pointer;
+  font-weight:700; font-size:0.88rem; color:var(--muted);
+  transition:all 0.2s;
+}
+.auth-tab.active {
+  background:var(--surface); color:var(--ocean);
+  box-shadow:0 1px 6px rgba(28,20,16,0.08);
+}
+
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+
+label {
+  font-size:0.75rem; font-weight:700; color:var(--text2);
+  text-transform:uppercase; letter-spacing:0.6px;
+}
+
+input, select, textarea {
+  background:var(--surface2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:11px 14px;
+  color:var(--text); font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.91rem; transition:all 0.2s; outline:none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--ocean); background:var(--surface);
+  box-shadow:0 0 0 3px rgba(21,101,168,0.1);
+}
+input::placeholder { color:var(--muted); }
+textarea { resize:vertical; min-height:72px; }
+.input-err { border-color:var(--red) !important; }
+
+.btn {
+  padding:11px 22px; border-radius:var(--radius-sm);
+  border:none; font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700; font-size:0.88rem; cursor:pointer;
+  transition:all 0.2s; display:inline-flex;
+  align-items:center; gap:7px; line-height:1;
+}
+.btn-primary { background:var(--ocean); color:#fff; }
+.btn-primary:hover { background:#124D8A; transform:translateY(-1px); box-shadow:0 4px 14px rgba(21,101,168,0.35); }
+.btn-sun { background:var(--sun); color:#fff; }
+.btn-sun:hover { background:#E07A0A; transform:translateY(-1px); box-shadow:0 4px 14px rgba(247,148,29,0.4); }
+.btn-success { background:var(--leaf); color:#fff; }
+.btn-success:hover { background:#235E26; }
+.btn-outline { background:var(--surface); color:var(--ocean); border:1.5px solid var(--ocean); }
+.btn-outline:hover { background:var(--ocean-lt); }
+.btn-ghost { background:transparent; color:var(--muted); border:1.5px solid var(--border); }
+.btn-ghost:hover { border-color:var(--border2); color:var(--text2); }
+.btn-danger { background:var(--red-lt); color:var(--red); border:1.5px solid rgba(198,40,40,0.2); }
+.btn-danger:hover { background:#FFCDD2; }
+.btn-sm { padding:7px 14px; font-size:0.8rem; border-radius:8px; }
+.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+#main-app { display:none; min-height:100vh; }
+
+header {
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 28px; height:64px;
+  position:sticky; top:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 1px 0 var(--border), 0 4px 24px rgba(28,20,16,0.04);
+}
+.header-logo {
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem; font-weight:900; color:var(--text);
+  display:flex; align-items:center; gap:10px;
+}
+.header-logo .logo-pill {
+  background:linear-gradient(135deg, var(--sun), #F75D1D);
+  width:32px; height:32px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; box-shadow:0 2px 8px rgba(247,148,29,0.4);
+}
+.header-logo em { color:var(--ocean); font-style:normal; }
+
+.header-right { display:flex; align-items:center; gap:12px; }
+.user-chip {
+  display:flex; align-items:center; gap:9px;
+  background:var(--surface2); border-radius:100px;
+  padding:5px 14px 5px 5px; border:1px solid var(--border);
+  font-size:0.84rem; font-weight:600; color:var(--text2);
+}
+.avatar {
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg, var(--ocean), var(--sun));
+  color:#fff; display:flex; align-items:center;
+  justify-content:center; font-size:0.78rem; font-weight:800;
+}
+.lang-toggle {
+  display:flex; background:var(--surface2);
+  border-radius:100px; padding:3px; gap:2px;
+  border:1px solid var(--border);
+}
+.lang-toggle button {
+  padding:5px 12px; border-radius:100px; border:none;
+  background:transparent; cursor:pointer; font-size:0.78rem;
+  font-weight:700; color:var(--muted); transition:all 0.2s;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.lang-toggle button.active {
+  background:var(--surface); color:var(--ocean);
+  box-shadow:0 1px 4px rgba(28,20,16,0.1);
+}
+.btn-logout {
+  padding:7px 16px; border-radius:var(--radius-sm);
+  border:1px solid var(--border); background:var(--surface);
+  color:var(--muted); font-size:0.82rem; font-weight:700;
+  cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all 0.2s;
+}
+.btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+.nav-bar {
+  background:var(--surface); border-bottom:1px solid var(--border);
+  display:flex; overflow-x:auto; gap:0;
+  position:sticky; top:64px; z-index:99;
+  scrollbar-width:none;
+}
+.nav-bar::-webkit-scrollbar { display:none; }
+.nav-btn {
+  padding:14px 18px; border:none; background:transparent;
+  color:var(--muted); font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700; font-size:0.84rem; cursor:pointer;
+  white-space:nowrap; border-bottom:3px solid transparent;
+  transition:all 0.2s; display:flex; align-items:center; gap:6px;
+  position:relative;
+}
+.nav-btn:hover { color:var(--text); background:var(--surface2); }
+.nav-btn.active { color:var(--ocean); border-bottom-color:var(--ocean); }
+.nav-badge {
+  background:var(--sun); color:#fff;
+  border-radius:100px; padding:1px 7px; font-size:0.7rem;
+  font-weight:800;
+}
+
+.container { max-width:940px; margin:0 auto; padding:32px 24px 100px; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; animation:fadeIn 0.25s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+.section-header {
+  margin-bottom:28px;
+  display:flex; align-items:flex-start;
+  justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.section-header h2 {
+  font-family:'Playfair Display',serif;
+  font-size:1.7rem; font-weight:900; color:var(--text); line-height:1.1;
+}
+.section-header p { color:var(--muted); font-size:0.88rem; margin-top:4px; }
+
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px; margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.card-accent-top { border-top:3px solid var(--sun); }
+.card-accent-ocean { border-top:3px solid var(--ocean); }
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+.summary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+.stat-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px 22px;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.stat-card::after {
+  content:''; position:absolute;
+  right:-12px; top:-12px; width:72px; height:72px;
+  border-radius:50%; opacity:0.07;
+}
+.stat-card.blue::after  { background:var(--ocean); }
+.stat-card.gold::after  { background:var(--sun); }
+.stat-card.green::after { background:var(--leaf); }
+.stat-num {
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem; font-weight:900; line-height:1;
+}
+.stat-card.blue .stat-num  { color:var(--ocean); }
+.stat-card.gold .stat-num  { color:var(--sun); }
+.stat-card.green .stat-num { color:var(--leaf); }
+.stat-label { font-size:0.8rem; color:var(--muted); margin-top:5px; font-weight:600; }
+
+.med-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px 18px;
+  margin-bottom:10px; display:flex; align-items:flex-start;
+  gap:14px; box-shadow:var(--shadow); transition:all 0.2s;
+}
+.med-card:hover { border-color:var(--border2); box-shadow:var(--shadow-md); }
+.med-card.inactive { opacity:0.5; filter:grayscale(0.3); }
+.med-icon {
+  width:46px; height:46px; border-radius:13px;
+  background:linear-gradient(135deg, var(--sun-light), var(--ocean-lt));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.35rem; flex-shrink:0; border:1px solid var(--border);
+}
+.med-info { flex:1; min-width:0; }
+.med-name { font-weight:700; font-size:0.96rem; margin-bottom:2px; }
+.med-detail { font-size:0.82rem; color:var(--text2); }
+.med-note { font-size:0.78rem; color:var(--amber); margin-top:3px; }
+.time-pills { display:flex; gap:5px; flex-wrap:wrap; margin-top:7px; }
+.time-pill {
+  background:var(--ocean-lt); border:1px solid rgba(21,101,168,0.15);
+  padding:2px 9px; border-radius:100px;
+  font-size:0.75rem; color:var(--ocean); font-weight:700;
+}
+.badge { padding:2px 9px; border-radius:100px; font-size:0.72rem; font-weight:700; }
+.badge-on  { background:var(--leaf-lt); color:var(--leaf); }
+.badge-off { background:var(--surface2); color:var(--muted); }
+.med-actions { display:flex; gap:6px; flex-shrink:0; align-items:flex-start; }
+
+.toggle-switch { position:relative; width:42px; height:24px; }
+.toggle-switch input { display:none; }
+.toggle-switch .slider {
+  position:absolute; inset:0; border-radius:12px;
+  background:var(--border2); cursor:pointer; transition:0.3s;
+}
+.toggle-switch input:checked + .slider { background:var(--leaf); }
+.toggle-switch .slider::before {
+  content:''; position:absolute;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; left:3px; top:3px;
+  transition:0.3s; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .slider::before { transform:translateX(18px); }
+
+.countdown-card {
+  background:linear-gradient(135deg, var(--ocean-lt), #D0E8FF);
+  border:1px solid rgba(21,101,168,0.2); border-radius:var(--radius);
+  padding:20px 24px; margin-bottom:16px; display:none;
+}
+.countdown-label {
+  font-size:0.73rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:0.8px; color:var(--ocean); margin-bottom:4px;
+}
+.countdown-med {
+  font-family:'Playfair Display',serif;
+  font-size:1.15rem; font-weight:700; color:var(--text);
+}
+#countdown-timer {
+  font-family:'Playfair Display',serif;
+  font-size:2.5rem; font-weight:900; color:var(--ocean);
+  letter-spacing:-2px; line-height:1;
+}
+
+.schedule-list { display:flex; flex-direction:column; gap:8px; }
+.schedule-item {
+  display:flex; align-items:center; gap:12px;
+  background:var(--surface2); border-radius:12px;
+  padding:12px 16px; border:1px solid var(--border);
+  transition:all 0.2s;
+}
+.schedule-item.is-next { background:var(--ocean-lt); border-color:rgba(21,101,168,0.25); }
+.schedule-time {
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem; font-weight:700; color:var(--ocean); min-width:56px;
+}
+.schedule-info { flex:1; }
+.schedule-med { font-weight:700; font-size:0.9rem; }
+.schedule-dose { font-size:0.8rem; color:var(--muted); }
+.schedule-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.dot-past   { background:var(--border2); }
+.dot-next   { background:var(--sun); animation:pulse 1.4s ease-in-out infinite; }
+.dot-future { background:var(--border); }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.85);} }
+
+.conv-result-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:18px; }
+@media(min-width:560px){ .conv-result-grid { grid-template-columns:repeat(4,1fr); } }
+.conv-box {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:14px; text-align:center;
+}
+.conv-box .unit-lbl {
+  font-size:0.7rem; text-transform:uppercase; letter-spacing:0.8px;
+  color:var(--muted); font-weight:700; margin-bottom:5px;
+}
+.conv-box .conv-val {
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem; font-weight:700; color:var(--ocean);
+}
+
+.info-strip {
+  border-radius:var(--radius-sm); padding:12px 16px;
+  font-size:0.85rem; margin-bottom:16px; border:1px solid;
+}
+.info-strip.amber { background:var(--amber-lt); border-color:rgba(230,81,0,0.2); color:var(--amber); }
+.info-strip.red   { background:var(--red-lt);   border-color:rgba(198,40,40,0.2); color:var(--red); }
+.info-strip.ocean { background:var(--ocean-lt); border-color:rgba(21,101,168,0.2); color:var(--ocean); }
+
+.ref-table { width:100%; border-collapse:collapse; font-size:0.86rem; }
+.ref-table th {
+  text-align:left; padding:8px 0; color:var(--muted);
+  font-weight:700; font-size:0.75rem; text-transform:uppercase;
+  letter-spacing:0.5px; border-bottom:2px solid var(--border);
+}
+.ref-table th:not(:first-child) { text-align:right; }
+.ref-table td { padding:9px 0; border-bottom:1px solid var(--border); }
+.ref-table td:first-child { color:var(--text2); font-weight:500; }
+.ref-table td:not(:first-child) { text-align:right; color:var(--ocean); font-weight:700; }
+
+.filter-chips { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px; }
+.chip {
+  padding:7px 15px; border-radius:100px;
+  border:1.5px solid var(--border); background:var(--surface);
+  color:var(--text2); font-weight:700; font-size:0.8rem;
+  cursor:pointer; transition:all 0.2s;
+}
+.chip:hover { border-color:var(--ocean); color:var(--ocean); }
+.chip.active { background:var(--ocean); border-color:var(--ocean); color:#fff; }
+
+.ph-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:10px; }
+.ph-card {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:var(--radius); padding:16px; cursor:pointer;
+  transition:all 0.2s;
+}
+.ph-card:hover { border-color:var(--ocean); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.ph-card .ph-name  { font-weight:800; font-size:0.92rem; color:var(--text); }
+.ph-card .ph-generic { font-size:0.76rem; color:var(--muted); margin-top:2px; line-height:1.4; }
+.ph-card .ph-dose  { font-size:0.8rem; color:var(--ocean); margin-top:8px; font-weight:700; }
+.ph-card .ph-type {
+  display:inline-block; padding:2px 9px;
+  border-radius:100px; font-size:0.7rem; font-weight:700; margin-top:6px;
+}
+.type-medicine { background:var(--ocean-lt); color:var(--ocean); }
+.type-milk     { background:var(--sun-light); color:var(--amber); }
+.type-vitamins { background:var(--leaf-lt); color:var(--leaf); }
+
+.settings-section { margin-bottom:16px; }
+.settings-section h3 {
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem; margin-bottom:12px; color:var(--text);
+}
+.settings-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px;
+}
+.settings-row:last-child { border-bottom:none; }
+.settings-label { font-weight:700; font-size:0.9rem; }
+.settings-desc  { font-size:0.8rem; color:var(--muted); margin-top:2px; }
+
+#toast {
+  position:fixed; bottom:28px; right:28px; z-index:9999;
+  background:var(--text); color:#fff;
+  border-radius:var(--radius-sm); padding:13px 20px;
+  font-weight:700; font-size:0.87rem;
+  transform:translateY(80px); opacity:0;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  max-width:320px; box-shadow:var(--shadow-md);
+  display:flex; align-items:center; gap:8px;
+}
+#toast.show { transform:none; opacity:1; }
+#toast.success { background:var(--leaf); }
+#toast.error   { background:var(--red); }
+#toast.info    { background:var(--ocean); }
+#toast.warn    { background:var(--amber); }
+
+.empty { text-align:center; padding:56px 20px; color:var(--muted); }
+.empty .eicon { font-size:2.8rem; margin-bottom:12px; }
+.empty p { font-size:0.9rem; }
+.loading { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:0.88rem; padding:20px 0; }
+.spinner {
+  width:18px; height:18px; border:2.5px solid var(--border);
+  border-top-color:var(--ocean); border-radius:50%;
+  animation:spin 0.7s linear infinite; flex-shrink:0;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(28,20,16,0.4); z-index:500;
+  align-items:center; justify-content:center;
+  padding:20px; backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border-radius:20px;
+  padding:36px; max-width:500px; width:100%;
+  box-shadow:var(--shadow-md); animation:slideUp 0.3s ease;
+  border:1px solid var(--border);
+}
+.modal h3 { font-family:'Playfair Display',serif; font-size:1.25rem; margin-bottom:20px; }
+.modal-actions { display:flex; gap:10px; margin-top:24px; justify-content:flex-end; }
+
+.email-preview-card {
+  display:none; margin-top:0;
+  background:linear-gradient(135deg,#F0FFF5,#E4F5EC);
+  border:1px solid rgba(46,125,50,0.2);
+  border-radius:var(--radius); padding:20px;
+  margin-bottom:16px;
+}
+.email-preview-inner {
+  background:#fff; border:1px solid var(--border);
+  border-radius:10px; padding:18px;
+  font-size:0.84rem; line-height:2; color:var(--text2);
+  white-space:pre-line;
+}
+
+@media(max-width:640px){
+  .form-grid { grid-template-columns:1fr; }
+  .summary-row { grid-template-columns:1fr 1fr; }
+  .auth-box { padding:32px 22px; }
+  .container { padding:20px 16px 80px; }
+  header { padding:0 16px; }
+  .header-logo span { display:none; }
+  .user-name { display:none; }
+  .nav-btn { padding:12px 14px; font-size:0.8rem; }
+}
+@media(max-width:400px){
+  .summary-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="pill-badge">💊 Gamot Reminder</div>
+      <h1>Reminderin ang<br>inyong <em>Kalusugan</em></h1>
+      <p id="auth-tagline">Your trusted medicine reminder companion 🇵🇭</p>
+    </div>
+
+    <div class="lang-row">
+      <button class="lang-btn active" id="lang-en" onclick="setAuthLang('en')">🇺🇸 English</button>
+      <button class="lang-btn" id="lang-fil" onclick="setAuthLang('fil')">🇵🇭 Filipino</button>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="atab-login"    onclick="switchAuthTab('login')"   >Sign In</div>
+      <div class="auth-tab"        id="atab-register" onclick="switchAuthTab('register')">Register</div>
+    </div>
+
+    
+    <div id="form-login">
+      <div class="form-group" style="margin-bottom:14px">
+        <label data-key="email">Email</label>
+        <input type="email" id="login-email" placeholder="you@email.com" autocomplete="email">
+      </div>
+      <div class="form-group" style="margin-bottom:22px">
+        <label data-key="password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()" id="btn-login">
+        <span data-key="signin">Sign In</span>
+      </button>
+      <p style="text-align:center;margin-top:12px;font-size:0.82rem">
+        <a href="#" onclick="showForgotPassword();return false"
+           style="color:var(--ocean);font-weight:700;text-decoration:none">Forgot password?</a>
+      </p>
+      <p style="text-align:center;margin-top:6px;font-size:0.8rem;color:var(--muted)" data-key="demo_hint">
+        Demo: use any email &amp; password to try
+      </p>
+    </div>
+
+    
+    <div id="form-forgot" style="display:none">
+      <p style="font-size:0.88rem;color:var(--text2);margin-bottom:16px">
+        Enter your registered email and we'll send a temporary password.
+      </p>
+      <div class="form-group" style="margin-bottom:18px">
+        <label>Email</label>
+        <input type="email" id="forgot-email" placeholder="you@email.com">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doForgotPassword()" id="btn-forgot">
+        📤 Send Reset Email
+      </button>
+      <p style="text-align:center;margin-top:12px;font-size:0.82rem">
+        <a href="#" onclick="showLoginFromForgot();return false"
+           style="color:var(--ocean);font-weight:700;text-decoration:none">← Back to Sign In</a>
+      </p>
+    </div>
+
+    
+    <div id="form-register" style="display:none">
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group full">
+          <label data-key="fullname">Full Name</label>
+          <input type="text" id="reg-name" placeholder="Juan Dela Cruz" autocomplete="name">
+        </div>
+        <div class="form-group full">
+          <label data-key="email">Email</label>
+          <input type="email" id="reg-email" placeholder="you@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label data-key="password">Password</label>
+          <input type="password" id="reg-password" placeholder="Min. 6 characters" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label data-key="confirm_pass">Confirm Password</label>
+          <input type="password" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password">
+        </div>
+      </div>
+      <button class="btn btn-success" style="width:100%;justify-content:center" onclick="doRegister()" id="btn-register">
+        <span data-key="create_account">Create Account</span>
+      </button>
+    </div>
+
+    <div id="auth-error" style="margin-top:14px;padding:11px 16px;background:var(--red-lt);border-radius:var(--radius-sm);font-size:0.85rem;color:var(--red);display:none;border:1px solid rgba(198,40,40,0.2)"></div>
+  </div>
+</div>
+
+<div id="main-app">
+  <header>
+    <div class="header-logo">
+      <div class="logo-pill">💊</div>
+      <span>Gamot<em>Reminder</em> <small style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:0.7rem;color:var(--muted)">PH</small></span>
+    </div>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button id="app-lang-en" class="active" onclick="setAppLang('en')">EN</button>
+        <button id="app-lang-fil" onclick="setAppLang('fil')">FIL</button>
+      </div>
+      <div class="user-chip">
+        <div class="avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name-display">User</span>
+      </div>
+      <button class="btn-logout" onclick="logout()" data-key="logout">Sign Out</button>
+    </div>
+  </header>
+
+  <nav class="nav-bar">
+    <button class="nav-btn active" onclick="switchTab('dashboard')">📋 <span data-key="nav_dashboard">Dashboard</span></button>
+    <button class="nav-btn" onclick="switchTab('add')">➕ <span data-key="nav_add">Add Reminder</span></button>
+    <button class="nav-btn" onclick="switchTab('active')">✅ <span data-key="nav_active">Active List</span> <span class="nav-badge" id="active-count">0</span></button>
+    <button class="nav-btn" onclick="switchTab('converter')">⚗️ <span data-key="nav_converter">Converter</span></button>
+    <button class="nav-btn" onclick="switchTab('medicines')">💉 <span data-key="nav_meds">PH Gamot</span></button>
+    <button class="nav-btn" onclick="switchTab('milk')">🍼 <span data-key="nav_milk">PH Milk</span></button>
+    <button class="nav-btn" onclick="switchTab('settings')">⚙️ <span data-key="nav_settings">Settings</span></button>
+  </nav>
+
+  <div class="container">
+
+    
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="section-header">
+        <div>
+          <h2 id="dashboard-greeting">Good morning! 👋</h2>
+          <p data-key="dashboard_sub">Here's your medicine schedule for today</p>
+        </div>
+        <button class="btn btn-sun btn-sm" onclick="switchTab('add')">➕ <span data-key="add_new">Add New</span></button>
+      </div>
+
+      <div class="summary-row">
+        <div class="stat-card blue">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label" data-key="stat_total">Total Medicines</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-num" id="stat-active">0</div>
+          <div class="stat-label" data-key="stat_active">Active Reminders</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-num" id="stat-today">0</div>
+          <div class="stat-label" data-key="stat_today">Doses Today</div>
+        </div>
+      </div>
+
+      
+      <div class="countdown-card" id="countdown-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="countdown-label">⏳ Next Dose</div>
+            <div class="countdown-med" id="countdown-med-name">—</div>
+            <div id="countdown-dose-info" style="font-size:0.82rem;color:var(--text2);margin-top:3px"></div>
+          </div>
+          <div style="text-align:right">
+            <div id="countdown-timer">00:00</div>
+            <div id="countdown-at-time" style="font-size:0.78rem;color:var(--muted);margin-top:2px;font-weight:600"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-accent-ocean">
+        <h3 style="font-family:'Playfair Display',serif;margin-bottom:16px;font-size:1rem" data-key="todays_schedule">📅 Today's Schedule</h3>
+        <div id="today-schedule"><div class="loading"><div class="spinner"></div><span data-key="loading">Loading…</span></div></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px;font-size:1rem" data-key="recent_medicines">💊 All Medicines</h3>
+        <div id="dashboard-meds-list"></div>
+      </div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-add">
+      <div class="section-header">
+        <div>
+          <h2 data-key="add_reminder">Add Medicine Reminder</h2>
+          <p data-key="add_sub">Fill in the details below</p>
+        </div>
+      </div>
+      <div class="card card-accent-top">
+        <input type="hidden" id="edit-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label data-key="med_name">Medicine Name *</label>
+            <input type="text" id="f-name" placeholder="e.g. Biogesic, Amoxicillin">
+          </div>
+          <div class="form-group">
+            <label data-key="dosage">Dosage *</label>
+            <input type="number" id="f-dosage" placeholder="e.g. 500" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label data-key="unit">Unit</label>
+            <select id="f-unit">
+              <option value="mg">mg (milligrams)</option>
+              <option value="mL">mL (milliliters)</option>
+              <option value="cc">cc (cubic centimeters)</option>
+              <option value="cup">Cup (tasa)</option>
+              <option value="tbsp">Kutsara (tablespoon)</option>
+              <option value="tsp">Kutsarita (teaspoon)</option>
+              <option value="g">g (grams)</option>
+              <option value="tablet">Tablet / Capsule</option>
+              <option value="drop">Patak (drops)</option>
+              <option value="sachet">Sachet</option>
+              <option value="scoop">Scoop (sukat)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label data-key="frequency">Frequency</label>
+            <select id="f-freq">
+              <option value="Once a day">Once a day / Isang beses sa araw</option>
+              <option value="Twice a day">Twice a day / Dalawang beses sa araw</option>
+              <option value="Three times a day">3x a day / Tatlong beses sa araw</option>
+              <option value="Four times a day">4x a day / Apat na beses sa araw</option>
+              <option value="Every 4 hours">Every 4 hours / Tuwing 4 na oras</option>
+              <option value="Every 6 hours">Every 6 hours / Tuwing 6 na oras</option>
+              <option value="Every 8 hours">Every 8 hours / Tuwing 8 na oras</option>
+              <option value="As needed">As needed / Kung kailangan (PRN)</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label data-key="sched_times">
+              Scheduled Times
+              <small style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(comma-separated, e.g. 08:00, 14:00, 20:00)</small>
+            </label>
+            <input type="text" id="f-times" placeholder="08:00, 14:00, 20:00">
+          </div>
+          <div class="form-group">
+            <label data-key="start_date">Start Date</label>
+            <input type="date" id="f-start">
+          </div>
+          <div class="form-group">
+            <label data-key="end_date">End Date</label>
+            <input type="date" id="f-end">
+          </div>
+          <div class="form-group full">
+            <label data-key="notes">Notes / Instructions</label>
+            <textarea id="f-notes" placeholder="e.g. Take after meals / Inumin pagkatapos kumain"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveReminder()" id="btn-save">
+            💾 <span data-key="save_reminder">Save Reminder</span>
+          </button>
+          <button class="btn btn-ghost" onclick="clearForm()">✕ <span data-key="clear">Clear</span></button>
+        </div>
+      </div>
+
+      
+      <div class="email-preview-card" id="email-preview-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <span style="font-size:1.3rem">📧</span>
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--leaf)">Email Reminder Preview</div>
+            <div style="font-size:0.78rem;color:var(--muted)">This is what will be sent before each dose</div>
+          </div>
+        </div>
+        <div class="email-preview-inner">
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px">
+            <div><b>To:</b> <span id="ep-email" style="color:var(--ocean)">—</span></div>
+            <div><b>Subject:</b> ⏰ Reminder: <span id="ep-subj-med">Medicine</span> — <span id="ep-subj-time">00:00</span></div>
+          </div>Hello <b id="ep-name">—</b>!
+
+💊 <b>Medicine:</b> <span id="ep-med">—</span>
+📏 <b>Dosage:</b> <span id="ep-dose">—</span>
+⏰ <b>Schedule:</b> <span id="ep-times-list">—</span>
+📅 <b>Frequency:</b> <span id="ep-freq">—</span>
+🗒️ <b>Notes:</b> <span id="ep-notes-txt">—</span>
+📆 <b>Start:</b> <span id="ep-start-txt">—</span>  <b>End:</b> <span id="ep-end-txt">—</span>
+
+Don't forget to take your medicine! Stay healthy.
+— Gamot Reminder PH 🇵🇭</div>
+      </div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-active">
+      <div class="section-header">
+        <div>
+          <h2 data-key="active_reminders">Active Medicine List</h2>
+          <p data-key="active_sub">Manage and toggle your medicine reminders</p>
+        </div>
+        <button class="btn btn-sun btn-sm" onclick="switchTab('add')">➕ <span data-key="add_new">Add New</span></button>
+      </div>
+      <div id="active-meds-list"></div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-converter">
+      <div class="section-header">
+        <div>
+          <h2 data-key="converter_title">Measurements Converter</h2>
+          <p data-key="converter_sub">Convert medicine measurements: CC, mL, Cup, Scoop, and more</p>
+        </div>
+      </div>
+      <div class="info-strip ocean">
+        ℹ️ <b>Philippine Standard:</b> 1 Kutsara = 15 mL | 1 Kutsarita = 5 mL | 1 Tasa = 240 mL | 1 cc = 1 mL | 1 Milk Scoop ≈ 5 g/mL
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label data-key="amount">Amount</label>
+            <input type="number" id="cv-amount" placeholder="Enter value…" min="0" step="0.01" oninput="doConvert()">
+          </div>
+          <div class="form-group">
+            <label data-key="from_unit">From Unit</label>
+            <select id="cv-from" onchange="doConvert()">
+              <optgroup label="Volume (Dami)">
+                <option value="mL">mL (milliliter)</option>
+                <option value="cc">cc (cubic centimeter)</option>
+                <option value="L">L (liter)</option>
+                <option value="tsp">tsp – Kutsarita (5 mL)</option>
+                <option value="tbsp">tbsp – Kutsara (15 mL)</option>
+                <option value="cup">Cup – Tasa (240 mL)</option>
+                <option value="fl_oz">fl oz (29.57 mL)</option>
+                <option value="drop">Patak / Drop (~0.05 mL)</option>
+                <option value="scoop5">Scoop 5g powder</option>
+                <option value="scoop10">Scoop 10g powder</option>
+              </optgroup>
+              <optgroup label="Weight (Timbang)">
+                <option value="mg">mg (milligrams)</option>
+                <option value="g">g (grams)</option>
+                <option value="kg">kg (kilograms)</option>
+                <option value="oz">oz weight (28.35 g)</option>
+                <option value="lb">lb (453.59 g)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="conv-result-grid" id="cv-results">
+          <p style="color:var(--muted);font-size:0.88rem;padding:8px 0;grid-column:1/-1" data-key="enter_value">Enter a value to see conversions.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:14px">📏 <span data-key="quick_ref">Quick Reference Table</span></h3>
+        <table class="ref-table">
+          <thead><tr>
+            <th data-key="measurement">Measurement</th>
+            <th>mL</th><th>tsp</th><th>tbsp</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>1 Patak (Drop)</td><td>0.05</td><td>0.01</td><td>0.003</td></tr>
+            <tr><td>1 Kutsarita (tsp)</td><td>5</td><td>1</td><td>0.33</td></tr>
+            <tr><td>5 mL</td><td>5</td><td>1</td><td>0.33</td></tr>
+            <tr><td>1 Kutsara (tbsp)</td><td>15</td><td>3</td><td>1</td></tr>
+            <tr><td>¼ Tasa (Cup)</td><td>60</td><td>12</td><td>4</td></tr>
+            <tr><td>½ Tasa (Cup)</td><td>120</td><td>24</td><td>8</td></tr>
+            <tr><td>1 Tasa (Cup)</td><td>240</td><td>48</td><td>16</td></tr>
+            <tr><td>1 cc ≈ 1 mL</td><td>1</td><td>0.2</td><td>0.067</td></tr>
+            <tr><td>Milk Scoop (~5g)</td><td>~5</td><td>1</td><td>0.33</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-medicines">
+      <div class="section-header">
+        <div>
+          <h2 data-key="ph_meds_title">Common PH Medicines</h2>
+          <p data-key="ph_meds_sub">Click a medicine to auto-fill the reminder form</p>
+        </div>
+      </div>
+      <div class="info-strip red">
+        ⚠️ <span data-key="med_warning">Always consult your doctor or pharmacist for proper dosage. For informational purposes only.</span>
+      </div>
+      <div class="filter-chips" id="med-filters">
+        <span class="chip active" onclick="filterMeds(this,'all')" data-key="all">All</span>
+        <span class="chip" onclick="filterMeds(this,'fever')"      data-key="fever">🤒 Fever/Pain</span>
+        <span class="chip" onclick="filterMeds(this,'child')"      data-key="child">👶 For Children</span>
+        <span class="chip" onclick="filterMeds(this,'antibiotic')" data-key="antibiotic">💉 Antibiotics</span>
+        <span class="chip" onclick="filterMeds(this,'vitamins')"   data-key="vitamins">🌿 Vitamins</span>
+        <span class="chip" onclick="filterMeds(this,'stomach')"    data-key="stomach">🫁 Stomach/GI</span>
+        <span class="chip" onclick="filterMeds(this,'bp')"         data-key="bp">❤️ BP/Diabetes</span>
+      </div>
+      <div class="ph-grid" id="meds-grid"></div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-milk">
+      <div class="section-header">
+        <div>
+          <h2 data-key="milk_title">🍼 PH Milk Products</h2>
+          <p data-key="milk_sub">Philippine infant, toddler, and adult milk formulas with dosage guide</p>
+        </div>
+      </div>
+      <div class="info-strip ocean">
+        ℹ️ <span data-key="milk_info">Scoop sizes and servings vary by brand. Always follow label instructions. 1 scoop ≈ 8–9g. Mix with appropriate amount of water (usually 60 mL per scoop).</span>
+      </div>
+      <div class="filter-chips" id="milk-filters">
+        <span class="chip active" onclick="filterMilk(this,'all')"      data-key="all">All</span>
+        <span class="chip" onclick="filterMilk(this,'newborn')"  data-key="newborn">🐣 Newborn (0–6m)</span>
+        <span class="chip" onclick="filterMilk(this,'infant')"   data-key="infant">👶 Infant (6m–1yr)</span>
+        <span class="chip" onclick="filterMilk(this,'toddler')"  data-key="toddler">🧒 Toddler (1–3yrs)</span>
+        <span class="chip" onclick="filterMilk(this,'growing')"  data-key="growing">🧒 Growing Up (3–6yrs)</span>
+        <span class="chip" onclick="filterMilk(this,'school')"   data-key="school">📚 School Age (6–12yrs)</span>
+        <span class="chip" onclick="filterMilk(this,'teen')"     data-key="teen">🧑 Teen (13+)</span>
+        <span class="chip" onclick="filterMilk(this,'adult')"    data-key="adult">🧑‍💼 Adult</span>
+        <span class="chip" onclick="filterMilk(this,'maternal')" data-key="maternal">🤱 Maternal</span>
+      </div>
+      <div class="ph-grid" id="milk-grid"></div>
+    </div>
+
+    
+    <div class="tab-panel" id="tab-settings">
+      <div class="section-header">
+        <div><h2 data-key="settings_title">Settings</h2></div>
+      </div>
+
+      
+      <div class="card settings-section">
+        <h3>👤 <span data-key="account_info">Account Information</span></h3>
+        <div class="settings-row">
+          <div><div class="settings-label" data-key="name">Name</div></div>
+          <div style="font-weight:700" id="s-name">—</div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Email</div></div>
+          <div style="font-weight:700;color:var(--ocean)" id="s-email">—</div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label" data-key="language">Language</div>
+            <div class="settings-desc" data-key="lang_desc">Choose your preferred language</div>
+          </div>
+          <div class="lang-toggle">
+            <button id="set-en" class="active" onclick="setAppLang('en')">🇺🇸 EN</button>
+            <button id="set-fil" onclick="setAppLang('fil')">🇵🇭 FIL</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="card settings-section">
+        <h3>🔐 <span data-key="change_password">Change Password</span></h3>
+        <div class="form-grid" style="margin-bottom:14px">
+          <div class="form-group full">
+            <label data-key="current_pw">Current Password</label>
+            <input type="password" id="pw-current" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label data-key="new_pw">New Password</label>
+            <input type="password" id="pw-new" placeholder="Min. 6 characters">
+          </div>
+          <div class="form-group">
+            <label data-key="confirm_new_pw">Confirm New Password</label>
+            <input type="password" id="pw-confirm" placeholder="Repeat new password">
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="doChangePassword()">🔐 <span data-key="update_pw">Update Password</span></button>
+      </div>
+
+      
+      <div class="card settings-section">
+        <h3>📧 <span data-key="email_reminders">Email Reminders</span></h3>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label" data-key="auto_remind">Automatic Email Reminders</div>
+            <div class="settings-desc" data-key="auto_remind_desc">Sends email 5 minutes before each scheduled dose</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="setupTrigger()">⚡ <span data-key="activate">Activate</span></button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label" data-key="test_email">Test Email</div>
+            <div class="settings-desc" data-key="test_email_desc">Send a test reminder to your email</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="sendTest()">📤 <span data-key="send_test">Send Test</span></button>
+        </div>
+      </div>
+
+      
+      <div class="card settings-section">
+        <h3>🔗 Apps Script URL</h3>
+        <div class="settings-desc" style="margin-bottom:10px">Your Google Apps Script Web App URL (ends in /exec)</div>
+        <input type="url" id="s-script-url" style="width:100%;margin-bottom:8px" placeholder="https://script.google.com/macros/s/.../exec">
+        <button class="btn btn-primary btn-sm" onclick="saveScriptUrlFromSettings()">💾 Save URL</button>
+      </div>
+
+      
+      <div class="card settings-section">
+        <h3>ℹ️ <span data-key="about">About</span></h3>
+        <div style="font-size:0.87rem;color:var(--text2);line-height:2.2">
+          <p>🇵🇭 <b>Gamot Reminder PH</b> — <span data-key="about_desc">Built for Filipinos</span></p>
+          <p>📊 <span data-key="data_saved">Data saved to your Google Sheets</span></p>
+          <p>⏰ Timezone: <b>Asia/Manila (UTC+8)</b></p>
+          <p>🔒 <span data-key="pw_hashed">Passwords are SHA-256 hashed</span></p>
+        </div>
+      </div>
+
+      
+      <div class="card" style="background:var(--ocean-lt);border-color:rgba(21,101,168,0.2)">
+        <h3 style="color:var(--ocean);font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:12px">
+          🚀 <span data-key="deploy_title">How to Deploy</span>
+        </h3>
+        <div style="font-size:0.84rem;color:var(--text2);line-height:2.3">
+          <span data-key="deploy_1">1. In Google Apps Script → Deploy → New deployment</span><br>
+          <span data-key="deploy_2">2. Type: Web app | Execute as: Me | Access: Anyone</span><br>
+          <span data-key="deploy_3">3. Click Deploy → Copy the Web App URL</span><br>
+          <span data-key="deploy_4">4. Activate email reminders in Settings above</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+
+var SCRIPT_URL = localStorage.getItem('gamot_script_url') || '';
+
+function setScriptUrl(url) {
+  SCRIPT_URL = url.trim();
+  localStorage.setItem('gamot_script_url', SCRIPT_URL);
+}
+
+function callAPI(params, successFn, failFn) {
+  if (!SCRIPT_URL) {
+    showUrlPrompt(function() { callAPI(params, successFn, failFn); });
+    return;
+  }
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' }, 
+    body: JSON.stringify(params),
+    redirect: 'follow'
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) { if (successFn) successFn(data); })
+  .catch(function(err) {
+    console.error('API error', err);
+    if (failFn) failFn(err);
+    else toast('❌ Network error. Check your Apps Script URL in Settings.', 'error', 5000);
+  });
+}
+
+function showUrlPrompt(cb) {
+  var url = prompt(
+    '🔗 Enter your Google Apps Script Web App URL:\n\n' +
+    'Go to script.google.com → Deploy → Manage Deployments → copy the URL\n\n' +
+    '(It looks like: https://script.google.com/macros/s/.../exec)'
+  );
+  if (url && url.trim()) {
+    setScriptUrl(url.trim());
+    if (cb) cb();
+  } else {
+    toast('⚠️ A Script URL is required to use this app.', 'error', 5000);
+  }
+}
+
+var currentUser = null;
+var reminders   = [];
+var currentLang = 'en';
+
+var TRANSLATIONS = {
+  en: {
+    auth_tagline:'Your trusted medicine reminder companion 🇵🇭',
+    login:'Sign In', register:'Register', email:'Email', password:'Password',
+    fullname:'Full Name', confirm_pass:'Confirm Password',
+    create_account:'Create Account', signin:'Sign In',
+    demo_hint:'Demo: use any email & password to try',
+    nav_dashboard:'Dashboard', nav_add:'Add Reminder', nav_active:'Active List',
+    nav_converter:'Converter', nav_meds:'PH Gamot', nav_milk:'PH Milk', nav_settings:'Settings',
+    dashboard_sub:"Here's your medicine schedule for today",
+    stat_total:'Total Medicines', stat_active:'Active Reminders', stat_today:'Doses Today',
+    todays_schedule:"📅 Today's Schedule", recent_medicines:'💊 All Medicines',
+    add_reminder:'Add Medicine Reminder', add_sub:'Fill in the details below',
+    add_new:'Add New', save_reminder:'Save Reminder', clear:'Clear',
+    med_name:'Medicine Name *', dosage:'Dosage *', unit:'Unit', frequency:'Frequency',
+    sched_times:'Scheduled Times', start_date:'Start Date', end_date:'End Date',
+    notes:'Notes / Instructions',
+    active_reminders:'Active Medicine List', active_sub:'Manage and toggle your medicine reminders',
+    converter_title:'Measurements Converter',
+    converter_sub:'Convert medicine measurements: CC, mL, Cup, Scoop, and more',
+    amount:'Amount', from_unit:'From Unit', enter_value:'Enter a value to see conversions.',
+    quick_ref:'Quick Reference Table', measurement:'Measurement',
+    ph_meds_title:'Common PH Medicines', ph_meds_sub:'Click a medicine to auto-fill the reminder form',
+    med_warning:'Always consult your doctor or pharmacist for proper dosage. For informational purposes only.',
+    all:'All', fever:'🤒 Fever/Pain', child:'👶 For Children', antibiotic:'💉 Antibiotics',
+    vitamins:'🌿 Vitamins', stomach:'🫁 Stomach/GI', bp:'❤️ BP/Diabetes',
+    milk_title:'🍼 PH Milk Products', milk_sub:'Philippine infant, toddler, and adult milk formulas',
+    milk_info:'Scoop sizes vary by brand. Always follow label instructions.',
+    newborn:'🐣 Newborn (0–6m)', infant:'👶 Infant (6m–1yr)', toddler:'🧒 Toddler (1–3yrs)',
+    growing:'🧒 Growing Up (3–6yrs)', school:'📚 School Age (6–12yrs)', teen:'🧑 Teen (13+)',
+    adult:'🧑 Adult', maternal:'🤱 Maternal',
+    settings_title:'Settings', account_info:'Account Information', name:'Name',
+    language:'Language', lang_desc:'Choose your preferred language',
+    change_password:'Change Password', current_pw:'Current Password',
+    new_pw:'New Password', confirm_new_pw:'Confirm New Password', update_pw:'Update Password',
+    email_reminders:'Email Reminders', auto_remind:'Automatic Email Reminders',
+    auto_remind_desc:'Sends email 5 minutes before each scheduled dose',
+    test_email:'Test Email', test_email_desc:'Send a test reminder to your email',
+    send_test:'Send Test', activate:'Activate',
+    about:'About', about_desc:'Built for Filipinos', data_saved:'Data saved to your Google Sheets',
+    pw_hashed:'Passwords are SHA-256 hashed',
+    deploy_title:'How to Deploy',
+    deploy_1:'1. In Google Apps Script → Deploy → New deployment',
+    deploy_2:'2. Type: Web app | Execute as: Me | Access: Anyone',
+    deploy_3:'3. Click Deploy → Copy the Web App URL',
+    deploy_4:'4. Activate email reminders in Settings above',
+    logout:'Sign Out', loading:'Loading…', no_schedule:'No medicines scheduled for today.',
+    no_reminders:'No reminders yet. Add one!', saved:'✅ Reminder saved!',
+    deleted:'🗑️ Reminder deleted.', fill_required:'Please fill in required fields.',
+    logged_in:'✅ Welcome back!', registered:'🎉 Account created! Welcome!',
+    pw_mismatch:'Passwords do not match.', pw_short:'Password must be at least 6 characters.',
+    pw_changed:'✅ Password updated successfully!',
+  },
+  fil: {
+    auth_tagline:'Ang inyong kasama para sa paalala ng gamot 🇵🇭',
+    login:'Mag-login', register:'Mag-register', email:'Email', password:'Password',
+    fullname:'Buong Pangalan', confirm_pass:'Kumpirmahin ang Password',
+    create_account:'Gumawa ng Account', signin:'Mag-login',
+    demo_hint:'Demo: gamitin ang anumang email at password',
+    nav_dashboard:'Dashboard', nav_add:'Magdagdag', nav_active:'Listahan',
+    nav_converter:'Converter', nav_meds:'PH Gamot', nav_milk:'PH Gatas', nav_settings:'Setting',
+    dashboard_sub:'Narito ang inyong iskedyul ng gamot ngayon',
+    stat_total:'Lahat ng Gamot', stat_active:'Aktibong Paalala', stat_today:'Dosis Ngayon',
+    todays_schedule:'📅 Iskedyul Ngayon', recent_medicines:'💊 Lahat ng Gamot',
+    add_reminder:'Magdagdag ng Paalala sa Gamot', add_sub:'Punan ang mga detalye',
+    add_new:'Magdagdag', save_reminder:'I-save ang Paalala', clear:'I-clear',
+    med_name:'Pangalan ng Gamot *', dosage:'Dosis *', unit:'Yunit', frequency:'Dalas',
+    sched_times:'Oras ng Gamot', start_date:'Petsa Simula', end_date:'Petsa Tapos',
+    notes:'Mga Tala / Instruksyon',
+    active_reminders:'Listahan ng Aktibong Gamot', active_sub:'Pamahalaan ang inyong mga paalala',
+    converter_title:'Converter ng Sukat',
+    converter_sub:'I-convert ang CC, mL, Cup, Scoop, at iba pa',
+    amount:'Halaga', from_unit:'Mula sa Yunit', enter_value:'Mag-input ng halaga para sa resulta.',
+    quick_ref:'Mabilis na Sanggunian', measurement:'Sukat',
+    ph_meds_title:'Karaniwang Gamot sa Pilipinas', ph_meds_sub:'I-click para auto-fill ang form',
+    med_warning:'Para sa tamang dosis, kumonsulta sa doktor o parmasyutiko. Para sa kaalaman lamang.',
+    all:'Lahat', fever:'🤒 Lagnat/Sakit', child:'👶 Para sa Bata', antibiotic:'💉 Antibiotics',
+    vitamins:'🌿 Vitamins', stomach:'🫁 Sikmura/GI', bp:'❤️ BP/Diabetes',
+    milk_title:'🍼 Gatas ng Pilipinas', milk_sub:'Mga gatas para sa sanggol hanggang matanda',
+    milk_info:'Ang sukat ng scoop ay nag-iiba sa bawat brand. Sundin palagi ang instruksyon sa label.',
+    newborn:'🐣 Bagong Silang (0–6b)', infant:'👶 Sanggol (6b–1t)', toddler:'🧒 Bata (1–3t)',
+    growing:'🧒 Lumalaki (3–6t)', school:'📚 Paaralan (6–12t)', teen:'🧑 Teenager (13+)',
+    adult:'🧑 Matanda', maternal:'🤱 Ina',
+    settings_title:'Mga Setting', account_info:'Impormasyon ng Account', name:'Pangalan',
+    language:'Wika', lang_desc:'Piliin ang inyong gustong wika',
+    change_password:'Palitan ang Password', current_pw:'Kasalukuyang Password',
+    new_pw:'Bagong Password', confirm_new_pw:'Kumpirmahin ang Bagong Password', update_pw:'I-update ang Password',
+    email_reminders:'Email Reminders', auto_remind:'Awtomatikong Email Reminders',
+    auto_remind_desc:'Nagpapadala ng email 5 minuto bago ang bawat dosis',
+    test_email:'Test na Email', test_email_desc:'Magpadala ng test reminder sa inyong email',
+    send_test:'Magpadala ng Test', activate:'I-activate',
+    about:'Tungkol', about_desc:'Ginawa para sa mga Pilipino', data_saved:'Data naka-save sa Google Sheets',
+    pw_hashed:'Ang mga password ay SHA-256 na naka-hash',
+    deploy_title:'Paano Mag-deploy',
+    deploy_1:'1. Sa Google Apps Script → Deploy → New deployment',
+    deploy_2:'2. Type: Web app | Execute as: Me | Access: Anyone',
+    deploy_3:'3. I-click ang Deploy → Kopyahin ang Web App URL',
+    deploy_4:'4. I-activate ang email reminders sa Settings',
+    logout:'Mag-logout', loading:'Naglo-load…', no_schedule:'Walang gamot ngayon.',
+    no_reminders:'Wala pang paalala. Magdagdag na!', saved:'✅ Na-save na ang paalala!',
+    deleted:'🗑️ Na-delete na.', fill_required:'Punan ang mga kinakailangang field.',
+    logged_in:'✅ Maligayang pagbabalik!', registered:'🎉 Nagawa na ang account! Maligayang pagdating!',
+    pw_mismatch:'Hindi magkatugma ang mga password.', pw_short:'Ang password ay dapat hindi bababa sa 6 na karakter.',
+    pw_changed:'✅ Na-update na ang password!',
+  }
+};
+
+function t(key) { return (TRANSLATIONS[currentLang] || TRANSLATIONS.en)[key] || key; }
+
+var PH_MEDICINES = [
+  {name:'Biogesic',generic:'Paracetamol 500mg',dosage:'500',unit:'mg',freq:'Four times a day',times:'07:00,13:00,19:00,22:00',notes:'For fever and mild pain / Para sa lagnat at sakit',cat:'fever'},
+  {name:'Tempra Syrup',generic:'Paracetamol (Children)',dosage:'5',unit:'mL',freq:'Four times a day',times:'07:00,12:00,17:00,22:00',notes:'Weight-based: 10–15 mg/kg per dose',cat:'fever child'},
+  {name:'Tempra Drops',generic:'Paracetamol Infant Drops',dosage:'0.8',unit:'mL',freq:'Four times a day',times:'07:00,12:00,17:00,22:00',notes:'For infants. Follow weight-based dosing.',cat:'fever child'},
+  {name:'Decolgen',generic:'Phenylpropanolamine + Paracetamol',dosage:'1',unit:'tablet',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'For colds and fever / Para sa sipon at lagnat',cat:'fever'},
+  {name:'Neozep',generic:'Paracetamol + Phenylephrine',dosage:'1',unit:'tablet',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'For colds and nasal congestion',cat:'fever'},
+  {name:'Medicol',generic:'Ibuprofen 200mg',dosage:'200',unit:'mg',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'Take with food. Not for empty stomach.',cat:'fever'},
+  {name:'Alaxan FR',generic:'Ibuprofen + Paracetamol',dosage:'1',unit:'tablet',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'For body pain and fever',cat:'fever'},
+  {name:'Mefenamic Acid',generic:'Mefenamic Acid 500mg',dosage:'500',unit:'mg',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'Not for empty stomach / Hindi sa walang laman',cat:'fever'},
+  {name:'Bonamine',generic:'Meclizine 25mg',dosage:'25',unit:'mg',freq:'Once a day',times:'',notes:'For motion sickness. Take 30 min before travel.',cat:'fever'},
+  {name:'Amoxicillin',generic:'Amoxicillin 500mg',dosage:'500',unit:'mg',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'Complete the full antibiotic course!',cat:'antibiotic'},
+  {name:'Augmentin',generic:'Amoxicillin + Clavulanic Acid 625mg',dosage:'625',unit:'mg',freq:'Twice a day',times:'08:00,20:00',notes:'Take with food',cat:'antibiotic'},
+  {name:'Azithromycin',generic:'Azithromycin 500mg',dosage:'500',unit:'mg',freq:'Once a day',times:'08:00',notes:'5-day course. Complete all doses.',cat:'antibiotic'},
+  {name:'Cefalexin',generic:'Cephalexin 500mg',dosage:'500',unit:'mg',freq:'Four times a day',times:'07:00,13:00,19:00,23:00',notes:'Complete full course',cat:'antibiotic'},
+  {name:'Ceelin',generic:'Vitamin C 500mg',dosage:'500',unit:'mg',freq:'Once a day',times:'08:00',notes:'For immune system / Para sa resistensya',cat:'vitamins'},
+  {name:'Enervon-C',generic:'Multivitamins + Vit C',dosage:'1',unit:'tablet',freq:'Once a day',times:'08:00',notes:'Best taken in the morning',cat:'vitamins'},
+  {name:'Cherifer',generic:'Multivitamins + Zinc',dosage:'1',unit:'tablet',freq:'Once a day',times:'20:00',notes:'For children growth / Para sa paglaki',cat:'vitamins child'},
+  {name:'Natalac',generic:'Malunggay (Moringa) Capsule',dosage:'500',unit:'mg',freq:'Twice a day',times:'08:00,20:00',notes:'For lactating mothers',cat:'vitamins'},
+  {name:'Fero-Z',generic:'Ferrous Sulfate + Zinc',dosage:'1',unit:'tablet',freq:'Once a day',times:'08:00',notes:'For anemia. Best on empty stomach.',cat:'vitamins'},
+  {name:'Diatabs',generic:'Attapulgite / Activated Charcoal',dosage:'2',unit:'tablet',freq:'Four times a day',times:'08:00,12:00,16:00,20:00',notes:'For diarrhea / Para sa pagtatae',cat:'stomach'},
+  {name:'Kremil-S',generic:'Antacid (Aluminum Hydroxide)',dosage:'2',unit:'tablet',freq:'Three times a day',times:'',notes:'For hyperacidity and ulcer. Take 30 min before meals.',cat:'stomach'},
+  {name:'Omeprazole',generic:'Omeprazole 20mg',dosage:'20',unit:'mg',freq:'Once a day',times:'08:00',notes:'30 min before breakfast',cat:'stomach'},
+  {name:'Solmux',generic:'Carbocisteine 500mg',dosage:'500',unit:'mg',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'For productive cough / Para sa ubo na may plema',cat:'fever'},
+  {name:'Ascof Lagundi',generic:'Lagundi (Vitex negundo)',dosage:'300',unit:'mg',freq:'Three times a day',times:'08:00,14:00,20:00',notes:'Herbal cough medicine / Herbal na gamot sa ubo',cat:'fever'},
+  {name:'Losartan',generic:'Losartan Potassium 50mg',dosage:'50',unit:'mg',freq:'Once a day',times:'08:00',notes:'For hypertension. Do not skip doses.',cat:'bp'},
+  {name:'Amlodipine',generic:'Amlodipine Besylate 5mg',dosage:'5',unit:'mg',freq:'Once a day',times:'08:00',notes:'For high blood pressure',cat:'bp'},
+  {name:'Metformin',generic:'Metformin HCl 500mg',dosage:'500',unit:'mg',freq:'Twice a day',times:'08:00,20:00',notes:'For diabetes. Take with meals.',cat:'bp'},
+  {name:'Simvastatin',generic:'Simvastatin 20mg',dosage:'20',unit:'mg',freq:'Once a day',times:'21:00',notes:'For high cholesterol. Take at night.',cat:'bp'},
+  {name:'Buong-Buong',generic:'Multivitamins for Kids (Syrup)',dosage:'5',unit:'mL',freq:'Once a day',times:'08:00',notes:'For young children',cat:'vitamins child'},
+];
+
+var PH_MILK = [
+  {name:'Similac Advance',brand:'Abbott',age:'Newborn 0–6m',scoop:'1 scoop per 60 mL water',prep:'Level scoop, add to warm water',notes:'For full-term newborns',cat:'newborn'},
+  {name:'NAN 1 HA',brand:'Nestlé',age:'Newborn 0–6m',scoop:'1 scoop per 60 mL water',prep:'Use cooled boiled water at 40°C',notes:'Hypoallergenic formula',cat:'newborn'},
+  {name:'Enfamil Newborn',brand:'Mead Johnson',age:'Newborn 0–6m',scoop:'1 scoop per 60 mL water',prep:'Shake well after mixing',notes:'With DHA and ARA',cat:'newborn'},
+  {name:'S-26 Gold Newborn',brand:'Wyeth/SMA',age:'Newborn 0–6m',scoop:'1 scoop per 60 mL water',prep:'Prepare fresh every feeding',notes:'Whey-based formula',cat:'newborn'},
+  {name:'Similac Gain Plus',brand:'Abbott',age:'Infant 6m–1yr',scoop:'1 scoop per 60 mL water',prep:'5 scoops per 300 mL',notes:'Follow-on formula',cat:'infant'},
+  {name:'NAN 2 Optipro',brand:'Nestlé',age:'Infant 6m–1yr',scoop:'1 scoop per 60 mL water',prep:'Gradually introduce with solids',notes:'With OptiPro protein blend',cat:'infant'},
+  {name:'Enfamil A+ 2',brand:'Mead Johnson',age:'Infant 6m–1yr',scoop:'1 scoop per 60 mL water',prep:'Use for transition to solid foods',notes:'With MFGM and DHA',cat:'infant'},
+  {name:'Bonna',brand:'Wyeth',age:'Infant 6m–1yr',scoop:'1 level scoop per 60 mL',prep:'Use sterilized bottle',notes:'Affordable step 2 formula',cat:'infant'},
+  {name:'Nido 3+',brand:'Nestlé',age:'Toddler 1–3 yrs',scoop:'4 scoops per 200 mL water',prep:'Add powder to water, stir well',notes:'With calcium and Vit D',cat:'toddler'},
+  {name:'Promil Gold',brand:'Wyeth',age:'Toddler 1–3 yrs',scoop:'4 scoops per 200 mL water',prep:'Mix with lukewarm water',notes:'With Prebiotic Fiber',cat:'toddler'},
+  {name:'Enfagrow A+ 3',brand:'Mead Johnson',age:'Toddler 1–3 yrs',scoop:'4 scoops per 200 mL water',prep:'Stir briskly until dissolved',notes:'For brain and body development',cat:'toddler'},
+  {name:'Lactum 1-3',brand:'Mead Johnson',age:'Toddler 1–3 yrs',scoop:'4 scoops per 200 mL water',prep:'Mix thoroughly',notes:'Popular PH toddler milk',cat:'toddler'},
+  {name:'Nido 5+',brand:'Nestlé',age:'Growing Up 3–6 yrs',scoop:'4–6 scoops per 200 mL',prep:'Add to water, stir well',notes:'For school readiness',cat:'growing'},
+  {name:'Enfagrow A+ 4',brand:'Mead Johnson',age:'Growing Up 3–6 yrs',scoop:'4 scoops per 200 mL water',prep:'2 glasses per day recommended',notes:'With MFGM and DHA',cat:'growing'},
+  {name:'Promil Pre-School',brand:'Wyeth',age:'Growing Up 3–6 yrs',scoop:'4 scoops per 200 mL water',prep:'Serve chilled or warm',notes:'For preschool development',cat:'growing'},
+  {name:'Lactum 3-5',brand:'Mead Johnson',age:'Growing Up 3–5 yrs',scoop:'4 scoops per 200 mL water',prep:'Mix thoroughly before serving',notes:'With nutrients for growth',cat:'growing'},
+  {name:'Milo Activ-Go',brand:'Nestlé',age:'School Age 6–12 yrs',scoop:'3 heaped tsp per 200 mL',prep:'Mix with hot or cold water/milk',notes:'With Protomalt malt barley',cat:'school'},
+  {name:'Ovaltine Classic',brand:'Associated British Foods',age:'School Age 6–12 yrs',scoop:'3–4 tsp per 200 mL',prep:'Mix with warm or cold milk',notes:'With vitamins and minerals',cat:'school'},
+  {name:'Bear Brand Fortified',brand:'Nestlé',age:'School Age 6+ yrs',scoop:'4 scoops per 240 mL water',prep:'Use clean water',notes:'Budget-friendly school milk',cat:'school'},
+  {name:'Alaska Choco',brand:'Alaska Milk Corp',age:'School Age 6–12 yrs',scoop:'4 scoops per 200 mL water',prep:'Shake if using ready-to-drink',notes:'Popular Filipino chocolate milk',cat:'school'},
+  {name:'Sustagen Sport',brand:'Mead Johnson',age:'Teen 13+ yrs',scoop:'4 scoops per 250 mL water',prep:'2–3 glasses per day',notes:'For active teenagers',cat:'teen'},
+  {name:'Ensure Gold',brand:'Abbott',age:'Adult / Senior',scoop:'6 scoops per 230 mL water',prep:'Stir for 30 sec until dissolved',notes:'For adults who need complete nutrition',cat:'adult'},
+  {name:'Sustagen Hospital',brand:'Mead Johnson',age:'Adult / Hospital Use',scoop:'9 scoops per 230 mL water',prep:'Dissolve completely before drinking',notes:'For recovery and nutritional support',cat:'adult'},
+  {name:'Bear Brand Adult',brand:'Nestlé',age:'Adult',scoop:'3 scoops per 200 mL water',prep:'Use clean water',notes:'Affordable daily adult milk',cat:'adult'},
+  {name:'Anlene Concentrate',brand:'Fonterra',age:'Adult 19–50 yrs',scoop:'2 scoops per 150 mL water',prep:'Take 2x daily for bone health',notes:'High calcium for bone strength',cat:'adult'},
+  {name:'Anmum Lacta',brand:'Fonterra',age:'Breastfeeding Moms',scoop:'4 scoops per 200 mL water',prep:'1–2 glasses per day',notes:'Supports breast milk production',cat:'maternal'},
+  {name:'Natalac Gatas',brand:'UNILAB',age:'Pregnant / Lactating',scoop:'1 sachet per 200 mL water',prep:'Once or twice daily',notes:'With Malunggay (Moringa)',cat:'maternal'},
+  {name:'Similac Mom',brand:'Abbott',age:'Pregnant / Lactating',scoop:'4 scoops per 200 mL water',prep:'Can be mixed with food or drinks',notes:'For maternal nutrition needs',cat:'maternal'},
+];
+
+var CV_VOL = {mL:1,cc:1,L:1000,tsp:5,tbsp:15,cup:240,fl_oz:29.5735,drop:0.05,scoop5:5,scoop10:10};
+var CV_WT  = {mg:0.001,g:1,kg:1000,oz:28.3495,lb:453.592};
+var CV_VOL_LABELS = {mL:'mL',cc:'cc',L:'L',tsp:'tsp (Kutsarita)',tbsp:'tbsp (Kutsara)',cup:'Cup (Tasa)',fl_oz:'fl oz',drop:'Drop',scoop5:'Scoop 5g',scoop10:'Scoop 10g'};
+var CV_WT_LABELS  = {mg:'mg',g:'g',kg:'kg',oz:'oz (wt)',lb:'lb'};
+
+function setAuthLang(lang) {
+  currentLang = lang;
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.getElementById('lang-fil').classList.toggle('active', lang==='fil');
+  applyTranslations();
+  document.getElementById('atab-login').textContent    = t('login');
+  document.getElementById('atab-register').textContent = t('register');
+}
+
+function switchAuthTab(tab) {
+  ['login','register','forgot'].forEach(function(id) {
+    var el = document.getElementById('form-' + id);
+    if (el) el.style.display = (id === tab ? '' : 'none');
+  });
+  document.getElementById('atab-login').classList.toggle('active',    tab==='login');
+  document.getElementById('atab-register').classList.toggle('active', tab==='register');
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function showForgotPassword() {
+  switchAuthTab('forgot');
+  document.getElementById('atab-login').classList.remove('active');
+  document.getElementById('atab-register').classList.remove('active');
+}
+function showLoginFromForgot() { switchAuthTab('login'); }
+
+function showAuthError(msg) {
+  var el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+function doForgotPassword() {
+  var email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showAuthError('Please enter your email address.'); return; }
+  var btn = document.getElementById('btn-forgot');
+  btn.disabled = true;
+  callAPI({ action:'sendPasswordReset', email:email }, function(res) {
+    btn.disabled = false;
+    if (res.success) {
+      showAuthError('');
+      toast('📤 Password reset email sent! Check your inbox.', 'success', 4000);
+      setTimeout(showLoginFromForgot, 2000);
+    } else { showAuthError(res.message || 'Email not found.'); }
+  }, function() { btn.disabled = false; });
+}
+
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pw    = document.getElementById('login-password').value;
+  if (!email || !pw) { showAuthError('Please fill in all fields.'); return; }
+  var btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  callAPI({ action:'login', email:email, password:pw }, function(res) {
+    btn.disabled = false;
+    if (res.success) { onLoginSuccess(res.user); }
+    else { showAuthError(res.message || 'Login failed.'); }
+  }, function() { btn.disabled = false; });
+}
+
+function doRegister() {
+  var name = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pw    = document.getElementById('reg-password').value;
+  var pw2   = document.getElementById('reg-confirm').value;
+  if (!name||!email||!pw||!pw2) { showAuthError(t('fill_required')); return; }
+  if (pw !== pw2) { showAuthError(t('pw_mismatch')); return; }
+  if (pw.length < 6) { showAuthError(t('pw_short')); return; }
+  var btn = document.getElementById('btn-register');
+  btn.disabled = true;
+  callAPI({ action:'register', name:name, email:email, password:pw, language:currentLang }, function(res) {
+    btn.disabled = false;
+    if (res.success) { onLoginSuccess(res.user); }
+    else { showAuthError(res.message); }
+  }, function() { btn.disabled = false; });
+}
+
+function onLoginSuccess(user) {
+  currentUser = user;
+  currentLang = user.language || 'en';
+  document.getElementById('auth-screen').style.display = 'none';
+  var appEl = document.getElementById('main-app');
+  void appEl.offsetHeight;
+  appEl.style.display = 'block';
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      try {
+        document.getElementById('user-avatar').textContent = (user.name||'?').charAt(0).toUpperCase();
+        document.getElementById('user-name-display').textContent = user.name || '';
+        document.getElementById('s-name').textContent  = user.name  || '';
+        document.getElementById('s-email').textContent = user.email || '';
+        setAppLang(currentLang);
+        switchTab('dashboard');
+        loadReminders();
+        updateDashboardGreeting();
+        toast(t('logged_in'), 'success');
+      } catch(e) { console.error('onLoginSuccess error:', e); }
+    }, 50);
+  });
+}
+
+function logout() {
+  currentUser = null;
+  reminders   = [];
+  document.getElementById('main-app').style.display   = 'none';
+  document.getElementById('auth-screen').style.display = '';
+  document.getElementById('login-email').value    = '';
+  document.getElementById('login-password').value = '';
+  switchAuthTab('login');
+}
+
+function setAppLang(lang) {
+  currentLang = lang;
+  ['app-lang-en','app-lang-fil','set-en','set-fil'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('active', id.endsWith(lang === 'en' ? 'en' : 'fil'));
+  });
+  applyTranslations();
+  updateDashboardGreeting();
+  if (currentUser) callAPI({ action:'updateUserLanguage', userId:currentUser.id, language:lang }, null, null);
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-key]').forEach(function(el) {
+    var val = t(el.getAttribute('data-key'));
+    if (val) el.textContent = val;
+  });
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  var panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+  var idx = {dashboard:0, add:1, active:2, converter:3, medicines:4, milk:5, settings:6}[name];
+  var navBtns = document.querySelectorAll('.nav-btn');
+  if (idx !== undefined && navBtns[idx]) navBtns[idx].classList.add('active');
+  if (name === 'medicines')  renderMeds('all');
+  else if (name === 'milk')  renderMilk('all');
+  else if (name === 'converter') doConvert();
+  else if (name === 'active')    doRenderActiveList();
+  else if (name === 'dashboard') doRenderDashboard();
+  else if (name === 'add')       updateEmailPreview();
+  else if (name === 'settings') {
+    var el = document.getElementById('s-script-url');
+    if (el) el.value = SCRIPT_URL;
+  }
+}
+
+function loadReminders() {
+  if (!currentUser) return;
+  callAPI({ action:'getReminders', userId:currentUser.id }, function(data) {
+    reminders = (data && data.reminders) || [];
+    doUpdateStats(); doRenderDashboard(); doRenderActiveList();
+  }, function(err) { console.error('getReminders failed:', err); });
+}
+
+function isActive(r) {
+  return r.active === true || r.active === 'TRUE' || r.active === 1;
+}
+
+function doUpdateStats() {
+  var total = reminders.length, activeCount = 0, doseCount = 0;
+  reminders.forEach(function(r) {
+    if (isActive(r)) {
+      activeCount++;
+      (r.times || '').split(',').forEach(function(ts) { if (ts.trim()) doseCount++; });
+    }
+  });
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-active').textContent = activeCount;
+  document.getElementById('stat-today').textContent  = doseCount;
+  document.getElementById('active-count').textContent = activeCount;
+}
+
+function doRenderActiveList() {
+  var el = document.getElementById('active-meds-list');
+  if (!el) return;
+  if (!reminders.length) {
+    el.innerHTML = '<div class="empty"><div class="eicon">💊</div><p>' + t('no_reminders') + '</p></div>';
+    return;
+  }
+  el.innerHTML = reminders.map(buildMedCard).join('');
+}
+
+function doRenderDashboard() {
+  var listEl  = document.getElementById('dashboard-meds-list');
+  var schedEl = document.getElementById('today-schedule');
+  if (!listEl || !schedEl) return;
+
+  if (!reminders.length) {
+    listEl.innerHTML  = '<div class="empty"><div class="eicon">💊</div><p>' + t('no_reminders') + '</p></div>';
+    schedEl.innerHTML = '<div class="empty"><div class="eicon">📅</div><p>' + t('no_schedule') + '</p></div>';
+    document.getElementById('countdown-card').style.display = 'none';
+    return;
+  }
+
+  listEl.innerHTML = reminders.map(buildMedCard).join('');
+
+  var now    = new Date();
+  var nowMin = now.getHours() * 60 + now.getMinutes();
+  var slots  = [];
+  reminders.forEach(function(r) {
+    if (!isActive(r)) return;
+    (r.times || '').split(',').forEach(function(ts) {
+      ts = ts.trim();
+      if (!/^\d{1,2}:\d{2}$/.test(ts)) return;
+      var p = ts.split(':');
+      slots.push({ time:ts, tMin:parseInt(p[0])*60+parseInt(p[1]), medicine:r.medicine, dosage:r.dosage, unit:r.unit });
+    });
+  });
+  slots.sort(function(a,b) { return a.tMin - b.tMin; });
+
+  if (!slots.length) {
+    schedEl.innerHTML = '<div class="empty"><div class="eicon">📅</div><p>' + t('no_schedule') + '</p></div>';
+    document.getElementById('countdown-card').style.display = 'none';
+    return;
+  }
+
+  var nextIdx = slots.findIndex(function(s) { return s.tMin >= nowMin; });
+  var html = '<div class="schedule-list">';
+  slots.forEach(function(s, k) {
+    var past   = s.tMin < nowMin;
+    var isNext = (k === nextIdx);
+    var dotCls = past ? 'dot-past' : (isNext ? 'dot-next' : 'dot-future');
+    html += '<div class="schedule-item' + (isNext ? ' is-next' : '') + '">' +
+      '<div class="schedule-time">' + s.time + '</div>' +
+      '<div class="schedule-info">' +
+        '<div class="schedule-med">' + s.medicine + '</div>' +
+        '<div class="schedule-dose">' + s.dosage + ' ' + s.unit + '</div>' +
+      '</div>' +
+      (isNext ? '<span style="font-size:0.74rem;background:var(--sun-light);color:var(--amber);padding:3px 10px;border-radius:100px;font-weight:800;border:1px solid rgba(247,148,29,0.25)">Next</span>' : '') +
+      '<div class="schedule-dot ' + dotCls + '"></div>' +
+    '</div>';
+  });
+  html += '</div>';
+  schedEl.innerHTML = html;
+  startCountdown();
+}
+
+function buildMedCard(r) {
+  var active   = isActive(r);
+  var timeHtml = (r.times || '').split(',')
+    .map(function(ts) { ts=ts.trim(); return ts ? '<span class="time-pill">⏰ '+ts+'</span>' : ''; })
+    .join('');
+  var icons = {tablet:'💊',mg:'💊',mL:'🧪',cc:'🧪',drop:'💧',tsp:'🥄',tbsp:'🥄',cup:'🥛',scoop:'🥄',sachet:'📦',g:'⚖️'};
+  var icon  = icons[r.unit] || '💊';
+  return '<div class="med-card' + (active ? '' : ' inactive') + '">' +
+    '<div class="med-icon">' + icon + '</div>' +
+    '<div class="med-info">' +
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+        '<span class="med-name">' + r.medicine + '</span>' +
+        '<span class="badge ' + (active ? 'badge-on' : 'badge-off') + '">' + (active ? 'Active' : 'Inactive') + '</span>' +
+      '</div>' +
+      '<div class="med-detail">' + r.dosage + ' ' + r.unit + ' — ' + r.frequency + '</div>' +
+      (r.notes ? '<div class="med-note">📝 ' + r.notes + '</div>' : '') +
+      '<div class="time-pills">' + timeHtml + '</div>' +
+      (r.startDate ? '<div style="font-size:0.76rem;color:var(--muted);margin-top:4px">📅 ' + r.startDate + (r.endDate ? ' → ' + r.endDate : '') + '</div>' : '') +
+    '</div>' +
+    '<div class="med-actions">' +
+      '<label class="toggle-switch"><input type="checkbox"' + (active ? ' checked' : '') + ' onchange="doToggle(\'' + r.id + '\',this.checked)"><span class="slider"></span></label>' +
+      '<button class="btn btn-sm btn-outline" onclick="editReminder(\'' + r.id + '\')">✏️</button>' +
+      '<button class="btn btn-sm btn-danger"  onclick="deleteReminder(\'' + r.id + '\')">🗑️</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function saveReminder() {
+  var name = document.getElementById('f-name').value.trim();
+  if (!name) { toast(t('fill_required'), 'error'); return; }
+  var editId = document.getElementById('edit-id').value || null;
+  var data = {
+    id:        editId,
+    medicine:  name,
+    dosage:    document.getElementById('f-dosage').value.trim(),
+    unit:      document.getElementById('f-unit').value,
+    frequency: document.getElementById('f-freq').value,
+    times:     document.getElementById('f-times').value.trim(),
+    startDate: document.getElementById('f-start').value,
+    endDate:   document.getElementById('f-end').value,
+    notes:     document.getElementById('f-notes').value.trim(),
+    active:    true
+  };
+  var btn = document.getElementById('btn-save');
+  btn.disabled = true;
+
+  callAPI({ action:'saveReminder', userId:currentUser.id, reminder:data }, function(res) {
+    btn.disabled = false;
+    if (res && res.success) {
+      toast(t('saved'), 'success');
+      clearForm();
+      callAPI({ action:'getReminders', userId:currentUser.id }, function(fresh) {
+        reminders = (fresh && fresh.reminders) || [];
+        doUpdateStats(); doRenderDashboard(); switchTab('active');
+      });
+    } else {
+      toast(res.message || 'Error saving reminder', 'error');
+    }
+  }, function(err) { btn.disabled = false; toast('Save failed', 'error'); console.error(err); });
+}
+
+function editReminder(id) {
+  var r = reminders.find(function(x) { return x.id === id; });
+  if (!r) return;
+  document.getElementById('edit-id').value    = r.id;
+  document.getElementById('f-name').value     = r.medicine;
+  document.getElementById('f-dosage').value   = r.dosage;
+  document.getElementById('f-unit').value     = r.unit;
+  document.getElementById('f-freq').value     = r.frequency;
+  document.getElementById('f-times').value    = r.times || '';
+  document.getElementById('f-start').value    = r.startDate || '';
+  document.getElementById('f-end').value      = r.endDate || '';
+  document.getElementById('f-notes').value    = r.notes || '';
+  switchTab('add');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function deleteReminder(id) {
+  var msg = currentLang === 'fil' ? 'Tanggalin ang reminder na ito?' : 'Delete this reminder?';
+  if (!confirm(msg)) return;
+  callAPI({ action:'deleteReminder', userId:currentUser.id, reminderId:id }, function() {
+    toast(t('deleted')); loadReminders();
+  });
+}
+
+function doToggle(id, active) {
+  reminders.forEach(function(r) { if (r.id === id) r.active = active; });
+  doUpdateStats(); doRenderDashboard(); doRenderActiveList();
+  callAPI({ action:'toggleReminder', userId:currentUser.id, reminderId:id, active:active }, null, null);
+}
+
+function clearForm() {
+  ['edit-id','f-name','f-dosage','f-times','f-end','f-notes'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-start').valueAsDate = new Date();
+  document.getElementById('email-preview-card').style.display = 'none';
+}
+
+function doChangePassword() {
+  var curr = document.getElementById('pw-current').value;
+  var nw   = document.getElementById('pw-new').value;
+  var conf = document.getElementById('pw-confirm').value;
+  if (!curr || !nw || !conf) { toast(t('fill_required'), 'error'); return; }
+  if (nw !== conf)            { toast(t('pw_mismatch'), 'error'); return; }
+  if (nw.length < 6)          { toast(t('pw_short'), 'error'); return; }
+
+  callAPI({ action:'changePassword', userId:currentUser.id, currentPassword:curr, newPassword:nw }, function(res) {
+    if (res.success) {
+      toast(t('pw_changed'), 'success');
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value     = '';
+      document.getElementById('pw-confirm').value = '';
+    } else { toast(res.message || 'Failed to change password.', 'error'); }
+  });
+}
+
+function doConvert() {
+  var amt  = parseFloat(document.getElementById('cv-amount').value);
+  var from = document.getElementById('cv-from').value;
+  var cont = document.getElementById('cv-results');
+  if (isNaN(amt) || amt === 0) {
+    cont.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;padding:8px 0;grid-column:1/-1">' + t('enter_value') + '</p>';
+    return;
+  }
+  var isVol  = CV_VOL.hasOwnProperty(from);
+  var units  = isVol ? CV_VOL  : CV_WT;
+  var labels = isVol ? CV_VOL_LABELS : CV_WT_LABELS;
+  var base   = amt * units[from];
+  cont.innerHTML = Object.keys(units).filter(function(u) { return u !== from; }).map(function(u) {
+    var val  = base / units[u];
+    var disp = val < 0.001
+      ? val.toExponential(2)
+      : parseFloat(val < 10 ? val.toFixed(4) : val.toFixed(2)).toLocaleString('en-PH');
+    return '<div class="conv-box"><div class="unit-lbl">' + labels[u] + '</div><div class="conv-val">' + disp + '</div></div>';
+  }).join('');
+}
+
+function renderMeds(filter) {
+  var meds = filter === 'all' ? PH_MEDICINES : PH_MEDICINES.filter(function(m) { return m.cat.includes(filter); });
+  document.getElementById('meds-grid').innerHTML = meds.map(function(m) {
+    return '<div class="ph-card" onclick="quickFill(\'' + m.name + '\')">' +
+      '<div class="ph-name">'    + m.name    + '</div>' +
+      '<div class="ph-generic">' + m.generic + '</div>' +
+      '<div class="ph-dose">'    + m.dosage  + ' ' + m.unit + '</div>' +
+      '<span class="ph-type type-medicine">Medicine</span>' +
+    '</div>';
+  }).join('');
+}
+
+function filterMeds(el, cat) {
+  document.querySelectorAll('#med-filters .chip').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+  renderMeds(cat);
+}
+
+function quickFill(name) {
+  var m = PH_MEDICINES.find(function(x) { return x.name === name; });
+  if (!m) return;
+  document.getElementById('f-name').value   = m.name;
+  document.getElementById('f-dosage').value = m.dosage;
+  document.getElementById('f-unit').value   = m.unit;
+  document.getElementById('f-freq').value   = m.freq;
+  document.getElementById('f-times').value  = m.times;
+  document.getElementById('f-notes').value  = m.notes;
+  document.getElementById('edit-id').value  = '';
+  switchTab('add');
+  toast('💊 ' + m.name + ' loaded!', 'info');
+}
+
+function renderMilk(filter) {
+  var items = filter === 'all' ? PH_MILK : PH_MILK.filter(function(m) { return m.cat === filter; });
+  document.getElementById('milk-grid').innerHTML = items.map(function(m) {
+    return '<div class="ph-card" onclick="quickFillMilk(\'' + m.name + '\')">' +
+      '<div class="ph-name">'    + m.name + '</div>' +
+      '<div class="ph-generic">' + m.brand + ' — ' + m.age + '</div>' +
+      '<div class="ph-dose">'    + m.scoop + '</div>' +
+      '<span class="ph-type type-milk">Milk</span>' +
+      '<div style="font-size:0.75rem;color:var(--muted);margin-top:5px">' + m.prep + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function filterMilk(el, cat) {
+  document.querySelectorAll('#milk-filters .chip').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+  renderMilk(cat);
+}
+
+function quickFillMilk(name) {
+  var m = PH_MILK.find(function(x) { return x.name === name; });
+  if (!m) return;
+  document.getElementById('f-name').value   = m.name + ' (' + m.brand + ')';
+  document.getElementById('f-dosage').value = '1';
+  document.getElementById('f-unit').value   = 'scoop';
+  document.getElementById('f-freq').value   = 'Three times a day';
+  document.getElementById('f-times').value  = '07:00,12:00,17:00';
+  document.getElementById('f-notes').value  = m.prep + ' | ' + m.notes;
+  document.getElementById('edit-id').value  = '';
+  switchTab('add');
+  toast('🍼 ' + m.name + ' loaded!', 'info');
+}
+
+function saveScriptUrlFromSettings() {
+  var url = document.getElementById('s-script-url').value.trim();
+  if (!url) { toast('Please enter the Apps Script URL', 'error'); return; }
+  setScriptUrl(url);
+  toast('✅ URL saved!', 'success');
+}
+
+function setupTrigger() {
+  callAPI({ action:'setupDailyTrigger' }, function() {
+    toast('⚡ Email reminders activated!', 'success');
+  });
+}
+
+function sendTest() {
+  if (!currentUser) return;
+  callAPI({ action:'sendTestReminder', userId:currentUser.id }, function(res) {
+    toast(res.success ? '📤 Test email sent!' : 'Failed to send.', res.success ? 'success' : 'error');
+  });
+}
+
+function updateEmailPreview() {
+  var name  = document.getElementById('f-name').value.trim();
+  var card  = document.getElementById('email-preview-card');
+  if (!name) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  var dosage    = document.getElementById('f-dosage').value.trim();
+  var unit      = document.getElementById('f-unit').value;
+  var freq      = document.getElementById('f-freq').value;
+  var times     = document.getElementById('f-times').value.trim();
+  var notes     = document.getElementById('f-notes').value.trim();
+  var startDate = document.getElementById('f-start').value;
+  var endDate   = document.getElementById('f-end').value;
+  var firstTime = times ? times.split(',')[0].trim() : '(set a time)';
+
+  function setTxt(id, val) { var el = document.getElementById(id); if(el) el.textContent = val; }
+  setTxt('ep-email',     currentUser ? currentUser.email : 'you@email.com');
+  setTxt('ep-name',      currentUser ? currentUser.name  : 'User');
+  setTxt('ep-subj-med',  name || 'Medicine');
+  setTxt('ep-subj-time', firstTime);
+  setTxt('ep-med',       name || '—');
+  setTxt('ep-dose',      dosage ? dosage + ' ' + unit : '—');
+  setTxt('ep-times-list', times || '—');
+  setTxt('ep-freq',      freq || '—');
+  setTxt('ep-notes-txt', notes || '(none)');
+  setTxt('ep-start-txt', startDate || '—');
+  setTxt('ep-end-txt',   endDate   || '—');
+}
+
+var countdownInterval = null;
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  function tick() {
+    var now    = new Date();
+    var nowSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    var best   = null, bestDiff = Infinity;
+    reminders.filter(function(r) { return isActive(r); }).forEach(function(r) {
+      (r.times || '').split(',').forEach(function(ts) {
+        ts = ts.trim();
+        if (!/^\d{1,2}:\d{2}$/.test(ts)) return;
+        var p    = ts.split(':');
+        var tSec = parseInt(p[0])*3600 + parseInt(p[1])*60;
+        var diff = tSec - nowSec;
+        if (diff <= 0) diff += 86400;
+        if (diff < bestDiff) { bestDiff = diff; best = {r:r, time:ts, diff:diff}; }
+      });
+    });
+    var card = document.getElementById('countdown-card');
+    if (!best) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    var h   = Math.floor(best.diff / 3600);
+    var m   = Math.floor((best.diff % 3600) / 60);
+    var s   = best.diff % 60;
+    var str = (h > 0 ? String(h).padStart(2,'0') + ':' : '') +
+              String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    document.getElementById('countdown-timer').textContent      = str;
+    document.getElementById('countdown-med-name').textContent   = best.r.medicine;
+    document.getElementById('countdown-dose-info').textContent  = best.r.dosage + ' ' + best.r.unit + ' — ' + best.r.frequency;
+    document.getElementById('countdown-at-time').textContent    = 'at ' + best.time;
+    var timerEl = document.getElementById('countdown-timer');
+    timerEl.style.color = best.diff <= 300 ? 'var(--red)' : best.diff <= 1800 ? 'var(--amber)' : 'var(--ocean)';
+  }
+  tick();
+  countdownInterval = setInterval(tick, 1000);
+}
+
+function updateDashboardGreeting() {
+  var hr    = new Date().getHours();
+  var greet = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
+  var map   = {
+    en:  {morning:'Good morning',  afternoon:'Good afternoon',  evening:'Good evening'},
+    fil: {morning:'Magandang umaga',afternoon:'Magandang hapon',evening:'Magandang gabi'}
+  };
+  document.getElementById('dashboard-greeting').textContent =
+    (map[currentLang] || map.en)[greet] + ', ' + (currentUser ? currentUser.name : '') + '! 👋';
+}
+
+function toast(msg, type, dur) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = (type || '');
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(function() { el.classList.remove('show'); }, dur || 2800);
+}
+
+window.onload = function() {
+  document.getElementById('f-start').valueAsDate = new Date();
+  applyTranslations();
+
+  
+  ['login-email','login-password'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) { if(e.key==='Enter') doLogin(); });
+  });
+  ['reg-name','reg-email','reg-password','reg-confirm'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) { if(e.key==='Enter') doRegister(); });
+  });
+  document.getElementById('forgot-email').addEventListener('keydown', function(e) {
+    if(e.key==='Enter') doForgotPassword();
+  });
+
+  
+  ['f-name','f-dosage','f-unit','f-freq','f-times','f-notes','f-start','f-end'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', updateEmailPreview); el.addEventListener('change', updateEmailPreview); }
+  });
+};
+</script>
+</body>
+</html>
